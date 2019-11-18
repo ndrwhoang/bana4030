@@ -4,6 +4,8 @@ import requests
 
 
 def indeed_job_scrape(keyword, search_location, no_page, job_type='None', exp_lvl='None'):
+    ### 'keyword' transformation
+    keyword = keyword.replace(' ','+')
     ### Data to scrape
     # Job title
     j_title = []
@@ -54,7 +56,8 @@ def indeed_job_scrape(keyword, search_location, no_page, job_type='None', exp_lv
     return df_local
 
 # Scraping 2 pages of jobs information technology related in Ohio
-df = indeed_job_scrape('information+technology', 'Ohio', no_page=2)
+df = indeed_job_scrape('information technology', 'Ohio', no_page=2)
 
 pd.options.display.max_columns = 50
 df.head()
+
