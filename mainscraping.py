@@ -6,6 +6,7 @@ import requests
 def indeed_job_scrape(keyword, search_location, no_page, job_type='None', exp_lvl='None'):
     ### 'keyword' transformation
     keyword = keyword.replace(' ','+')
+    
     ### Data to scrape
     # Job title
     j_title = []
