@@ -2,7 +2,6 @@ import pandas as pd
 from bs4 import BeautifulSoup
 import requests
 
-
 def indeed_job_scrape(keyword, search_location, no_page, job_type='None', exp_lvl='None'):
     ### 'keyword' transformation to fit in with url
     keyword = keyword.replace(' ','+')
@@ -33,7 +32,7 @@ def indeed_job_scrape(keyword, search_location, no_page, job_type='None', exp_lv
             # Company name                       
             company_name.append(i.find('span', {'class':'company'}).text)
             # Salary (if information available, 'None' otherwise)                        
-            salary.append(i.find('span', {'class':'salaryText'}))  
+            salary.append(i.find('span', {'class':'salaryText'}).text if i.find('span', {'class':'salaryText'}) else 'None')  
             # Job location                             
             location.append(i.find(attrs={'class':'location'}).text)
             # Comapny rating
@@ -57,10 +56,10 @@ def indeed_job_scrape(keyword, search_location, no_page, job_type='None', exp_lv
 
 # Scraping , first arguement is keyword, second location, thrid number of pages (~19 postings per pages)
 # job type and experience level optional
-df = indeed_job_scrape('information technology', 'Ohio', no_page=10)
+df = indeed_job_scrape('information technology', 'Ohio', no_page=1)
 
 pd.options.display.max_columns = 50
 df.head()
 
-# Export to csv
+# Export csv to current working directory
 df.to_csv('indeed_jobs.csv')
