@@ -5,6 +5,16 @@ import requests
 def indeed_job_scrape(keyword, search_location, no_page, job_type='None', exp_lvl='None'):
     ### 'keyword' transformation to fit in with url
     keyword = keyword.replace(' ','+')
+    ### exp_level number convert to query arguement
+    if exp_lvl == 1:
+        exp_lvl_str = 'entry_level'
+    elif exp_lvl == 2:
+        exp_lvl_str = 'mid_level'
+    elif exp_lvl == 3:
+        exp_lvl_str = 'senior_level'
+    else:
+        raise ValueError('exp_lvl only accpets 1, 2, or 3')
+    
     ### Data to scrape
     # Job title
     j_title = []
@@ -23,7 +33,8 @@ def indeed_job_scrape(keyword, search_location, no_page, job_type='None', exp_lv
     
     ### Main scraping loop
     for page_index in range(0, no_page*10, 10):
-        page = 'https://www.indeed.com/jobs?q=' + keyword + '&l=' + search_location + '&jt=' + job_type + '&explvl=' + exp_lvl + '&start=' + str(page_index)
+        page = 'https://www.indeed.com/jobs?q=' + keyword + '&l=' + search_location + '&jt=' + job_type + '&explvl=' + exp_lvl_str + '&start=' + str(page_index)
+        print(page)
         page_response = requests.get(page, timeout=5)
         main_soup = BeautifulSoup(page_response.text, 'html5lib')
         for i in main_soup.find_all('div', {'class':'jobsearch-SerpJobCard'}):
@@ -56,10 +67,16 @@ def indeed_job_scrape(keyword, search_location, no_page, job_type='None', exp_lv
 
 # Scraping , first arguement is keyword, second location, thrid number of pages (~19 postings per pages)
 # job type and experience level optional
-df = indeed_job_scrape('information technology', 'Ohio', no_page=1)
+# 1 for entry level jobs, 2 for mid level, and 3 for senior level
+df = indeed_job_scrape('information technology', 'Ohio', no_page=20, exp_lvl=2)
 
 pd.options.display.max_columns = 50
 df.head()
 
+# Make a copy for each exp level, change the variable accordingly
+df_mid = df.copy()
+
 # Export csv to current working directory
-df.to_csv('indeed_jobs.csv')
+df_entry.to_csv('indeed_jobs_entry.csv', index=False)
+df_mid.to_csv('indeed_jobs_mid.csv', index=False)
+df_senior.to_csv('indeed_jobs_senior.csv', index=False)
