@@ -6,11 +6,10 @@ import plotly.offline as py
 import plotly.graph_objs as go
 import plotly.tools as tls
 
-# Misc
-from collections import Counter
-import scipy
+# NLP
+from nltk.stem import WordNetLemmatizer
 from matplotlib.pyplot import imread
-from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
+from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import NMF, LatentDirichletAllocation
 from matplotlib import pyplot as plt
 %matplotlib inline
@@ -77,3 +76,29 @@ j3_cloud = WordCloud(stopwords = stop_words,
                      height=1800).generate(' '.join(jd_dict_3))
 plt.imshow(j3_cloud)
 plt.axis('off')
+
+# sklearn tokenizer with nltk lemmatizer
+lemm = WordNetLemmatizer()
+class LemmaCountVectorizer(CountVectorizer):
+    def build_analyzer(self):
+        analyzer = super(LemmaCountVectorizer, self).build_analyzer()
+        return lambda doc: (lemm.lemmatize(i) for i in analyzer(doc))
+
+# Applying the new tokenizer method
+tf_vectorizer = LemmaCountVectorizer(max_df=0.95, min_df=5, stop_words='english', decode_error='ignore')
+tf_vector = tf_vectorizer.fit_transform(list(df.full_description.values))
+
+# Top 50 frequent clean
+word_freq = zip(tf_vectorizer.get_feature_names(),
+                tf_vector.toarray().sum(axis=0))
+word_freq = sorted(word_freq, key=lambda x: x[1], reverse=True)
+
+plot_data_clean = [go.Bar(x=list(zip(*word_freq))[0][0:50],
+                   y=list(zip(*word_freq))[1][0:50],
+                   marker=dict(colorscale='Jet',
+                   color=list(zip(*word_freq))[1][0:50]
+                   ),
+                   text='Word Counts')]
+layout = go.Layout(title='Top 50 Frequent Words after Processing')                    
+fig = go.Figure(data=plot_data_clean, layout=layout)
+py.plot(fig, filename='freq_bar_clean.html')
