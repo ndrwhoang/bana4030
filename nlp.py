@@ -16,7 +16,7 @@ from matplotlib import pyplot as plt
 pd.options.display.max_columns = 10
 np.random.seed(42)
 
-df = pd.to_csv('full_dataset_clean.csv')
+df = pd.read_csv('full_dataset_clean.csv')
 
 # Frequency of job level
 plt.bar(10, len(df.exp_lvl[df.exp_lvl==1]), label='Entry Level')
