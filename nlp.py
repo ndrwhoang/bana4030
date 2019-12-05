@@ -10,7 +10,6 @@ import plotly.tools as tls
 from nltk.stem import WordNetLemmatizer
 from matplotlib.pyplot import imread
 from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.decomposition import NMF, LatentDirichletAllocation
 from matplotlib import pyplot as plt
 %matplotlib inline
 pd.options.display.max_columns = 10
